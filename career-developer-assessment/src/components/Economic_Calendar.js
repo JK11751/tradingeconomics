@@ -12,6 +12,7 @@ import {
   Button,
   HStack,
   Heading,
+  useColorModeValue
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -37,7 +38,6 @@ const formatTime = (dateString) => {
 };
 
 const EconomicCalendar = () => {
-  // `https://api.tradingeconomics.com/calendar?c=${api_key}`
   const api_key = "221d78e9d052438:k9no7md76vyiglo";
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -55,7 +55,6 @@ const EconomicCalendar = () => {
       const response = await axios.get(
         `https://api.tradingeconomics.com/calendar?c=${api_key}&f=json`
       );
-      console.log(response.data);
       setEvents(response.data);
       setFilteredEvents(response.data);
     };
@@ -69,7 +68,6 @@ const EconomicCalendar = () => {
 
   const applyFilters = () => {
     if (!isFiltering) {
-      // Apply filters
       let filtered = events;
 
       if (filters.date) {
@@ -115,10 +113,14 @@ const EconomicCalendar = () => {
     }
   };
 
+  const tableHeaderBg = useColorModeValue("#53a8b6");
+  const tableHeaderColor = useColorModeValue("white", "gray.800");
+  const tableRowHoverBg = useColorModeValue("#ececec");
+
   return (
     <Box overflowX="auto" p="2">
         <Heading textAlign={'center'} fontSize={'lg'} fontWeight={'bold'} mb={2}>Economic Calendar</Heading>
-      <HStack >
+      <HStack mb={4}>
         <Input
           placeholder="Filter by Date (YYYY-MM-DD)"
           name="date"
@@ -149,65 +151,57 @@ const EconomicCalendar = () => {
           {isFiltering ? "Clear Filters" : "Apply Filters"}
         </Button>
       </HStack>
-      <Box overflowX="auto" mt="4">
-      <Table variant="simple" >
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Date</Th>
-            <Th>Time</Th>
-            <Th>Country</Th>
-            <Th>Category</Th>
-            <Th>Event</Th>
-            <Th>Reference</Th>
-            <Th>Source</Th>
-            
-
-            <Th>Importance</Th>
-            <Th>Last Update Date</Th>
-            <Th>Last Update Time</Th>
-          
-            
-            <Th>Ticker</Th>
-            <Th>Symbol</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredEvents.map((event) => (
-            <Tr key={event.CalendarId}>
-              <Td>{event.CalendarId}</Td>
-              <Td>{formatDate(event.Date)}</Td>
-              <Td>{formatTime(event.Date)}</Td>
-              <Td>{event.Country}</Td>
-              <Td>{event.Category}</Td>
-              <Td>{event.Event}</Td>
-              <Td>{event.Reference}</Td>
-              <Td>
-                {event.SourceURL ? (
-                  <a
-                    href={event.SourceURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Link
-                  </a>
-                ) : (
-                  "N/A"
-                )}
-              </Td>
-
-              
-              <Td>{event.Importance}</Td>
-              <Td>{formatDate(event.LastUpdate)}</Td>
-              <Td>{formatTime(event.LastUpdate)}</Td>
-       
-              
-              <Td>{event.Ticker}</Td>
-              <Td>{event.Symbol}</Td>
+      <Box overflowX="auto">
+        <Table variant="striped" colorScheme="blue">
+          <Thead bg={tableHeaderBg}>
+            <Tr>
+              <Th color={tableHeaderColor}>ID</Th>
+              <Th color={tableHeaderColor}>Date</Th>
+              <Th color={tableHeaderColor}>Time</Th>
+              <Th color={tableHeaderColor}>Country</Th>
+              <Th color={tableHeaderColor}>Category</Th>
+              <Th color={tableHeaderColor}>Event</Th>
+              <Th color={tableHeaderColor}>Reference</Th>
+              <Th color={tableHeaderColor}>Source</Th>
+              <Th color={tableHeaderColor}>Importance</Th>
+              <Th color={tableHeaderColor}>Last Update Date</Th>
+              <Th color={tableHeaderColor}>Last Update Time</Th>
+              <Th color={tableHeaderColor}>Ticker</Th>
+              <Th color={tableHeaderColor}>Symbol</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {filteredEvents.map((event) => (
+              <Tr key={event.CalendarId} _hover={{ bg: tableRowHoverBg }}>
+                <Td>{event.CalendarId}</Td>
+                <Td>{formatDate(event.Date)}</Td>
+                <Td>{formatTime(event.Date)}</Td>
+                <Td>{event.Country}</Td>
+                <Td>{event.Category}</Td>
+                <Td>{event.Event}</Td>
+                <Td>{event.Reference}</Td>
+                <Td>
+                  {event.SourceURL ? (
+                    <a
+                      href={event.SourceURL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Link
+                    </a>
+                  ) : (
+                    "N/A"
+                  )}
+                </Td>
+                <Td>{event.Importance}</Td>
+                <Td>{formatDate(event.LastUpdate)}</Td>
+                <Td>{formatTime(event.LastUpdate)}</Td>
+                <Td>{event.Ticker}</Td>
+                <Td>{event.Symbol}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
       </Box>
     </Box>
   );
